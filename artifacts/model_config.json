@@ -1,0 +1,12 @@
+{
+    "hidden_units": [
+        64,
+        32,
+        16
+    ],
+    "dropout_rate": 0.2,
+    "l2_strength": 0.001,
+    "learning_rate": 0.001,
+    "batch_size": 256,
+    "selected_threshold": 0.9956268072128296
+}
