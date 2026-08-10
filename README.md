@@ -59,6 +59,9 @@ The features `V1`–`V28` are anonymized numerical features, while `Time` and `A
 fraud-detection/
 │
 │
+├── data/
+│   ├── cleaned_data.parquet
+│
 ├── notebooks/
 │   ├── 01_EDA.ipynb
 │   └── 02_Modeling.ipynb
@@ -71,6 +74,8 @@ fraud-detection/
 │   ├── final_metrics.csv
 │   ├── hyperparameter_results.csv
 │   └── training_history.csv
+│
+├── app.py
 │
 ├── README.md
 ├── .gitignore
