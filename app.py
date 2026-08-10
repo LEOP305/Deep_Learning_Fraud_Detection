@@ -15,12 +15,30 @@ from tensorflow import keras
 # Config
 # --------------------------------------------------------------------------
 ARTIFACTS_DIR = "artifacts"
+# Parquet candidates come first - prefer them if present since they're much
+# smaller and faster to load than the equivalent CSV.
 DATA_CANDIDATES = [
+    "data/cleaned_data.parquet",
+    "data/creditcard.parquet",
+    "data/cleaned_data.csv.gz",
+    "data/creditcard.csv.gz",
     "data/cleaned_data.csv",
     "data/creditcard.csv",
+    "cleaned_data.parquet",
+    "cleaned_data.csv.gz",
     "cleaned_data.csv",
     "creditcard.csv",
 ]
+
+
+def _read_table(path_or_buffer, filename: str) -> pd.DataFrame:
+    """Read a dataset file based on its extension (parquet / csv / csv.gz)."""
+    name = filename.lower()
+    if name.endswith(".parquet"):
+        return pd.read_parquet(path_or_buffer)
+    if name.endswith(".gz"):
+        return pd.read_csv(path_or_buffer, compression="gzip")
+    return pd.read_csv(path_or_buffer)
 RANDOM_STATE = 42  # must match 02_Modeling.ipynb for the test split to line up
 
 st.set_page_config(
@@ -74,7 +92,7 @@ def load_metrics_artifacts():
 def load_dataset_from_disk():
     for path in DATA_CANDIDATES:
         if os.path.exists(path):
-            return pd.read_csv(path), path
+            return _read_table(path, path), path
     return None, None
 
 
@@ -137,12 +155,14 @@ with tab_explore:
 
     if df is None:
         st.warning(
-            "No dataset found at `data/cleaned_data.csv` (or the other usual spots). "
+            "No dataset found under `data/` (checked parquet, csv.gz, and csv). "
             "Upload the cleaned dataset to explore real transactions."
         )
-        uploaded = st.file_uploader("Upload cleaned_data.csv or creditcard.csv", type="csv")
+        uploaded = st.file_uploader(
+            "Upload cleaned_data (.parquet, .csv.gz, or .csv)", type=["parquet", "gz", "csv"]
+        )
         if uploaded is not None:
-            df = pd.read_csv(uploaded)
+            df = _read_table(uploaded, uploaded.name)
         else:
             st.stop()
     else:
