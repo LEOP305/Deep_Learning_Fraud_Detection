@@ -60,7 +60,7 @@ fraud-detection/
 │
 │
 ├── data/
-│   ├── cleaned_data.parquet
+│   └── cleaned_data.parquet
 │
 ├── notebooks/
 │   ├── 01_EDA.ipynb
